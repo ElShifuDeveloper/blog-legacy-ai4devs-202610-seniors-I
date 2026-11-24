@@ -14,10 +14,9 @@ El ejercicio manda a Claude; en mi caso la herramienta es **OpenCode**.
 necesito resolver todo el ejercicio ubicado aqui: https://github.com/LIDR-academy-temp/blog-legacy-ai4devs-202610-seniors-I, adicional mi repo principal de git es https://github.com/ElShifuDeveloper, mi nombre es Pedro Molina Suazo, porfavor asume que lo que dice que se ahga con claude se hace con Opencode
 ```
 
-**Qué salió:** el agente leyó el README del repo y dedujo el ejercicio, el fork y la rama. No
-hizo falta repetirle el enunciado, pero tampoco distinguió solo lo que el README deja ambiguo
-(qué repo es «este repositorio» para el PR, y que el fork no se llama igual que en las
-instrucciones).
+**Qué salió:** leyó el README y dedujo el ejercicio, el fork y la rama; el repo del enunciado
+solo existe como `LIDR-academy-temp/…` (el `LIDR-academy/…` del README da 404), así que el fork
+y el PR van ahí.
 
 ---
 
@@ -54,14 +53,9 @@ Exige rigor: no inventes vulnerabilidades que no puedas señalar con una línea,
 Formato de salida: tabla markdown + una lista final "descartado y por qué" con lo que consideraste y no llegó a fila. Responde en castellano.
 ```
 
-**Qué salió:** devolvió 16 filas, ordenadas y etiquetadas por prioridad y tipo, más una lista
-de 15 descartes con su motivo. Levantó la API en otro puerto (3497-3499) y comprobó cada fila
-con curl, y restauró la base al terminar. Dos cosas útiles de su salida: me corrigió una cifra
-(el post 1 tiene 4 comentarios no pendientes, no 3: mis pruebas habían borrado una fila y no
-había vuelto a sembrar) y admitió que el `select` final no lo pudo reproducir con 65 peticiones
-concurrentes. También encontró tres hallazgos que yo no tenía: la desviación de arquitectura de
-`CLAUDE.md:59`, la falta de `unique` en `posts.slug` (regla 3) y que la credencial de borrado
-viaja también en la query string.
+**Qué salió:** 16 filas con prioridad y tipo, más 15 descartes; me corrigió una cifra mía (el
+post 1 tiene 4 comentarios no pendientes, no 3) y admitió que el `select` final no lo pudo
+reproducir.
 
 ---
 
@@ -88,12 +82,18 @@ He recibido tu tabla. Segunda pasada, solo de verificación. No repitas la audit
 No toques archivos del repo. Responde solo a esos cuatro puntos, en castellano.
 ```
 
-**Qué salió:** confirmó las cifras (4/2 en el post 1, 1/0 en el post 6) y avisó de que había
-leído la base en mitad de un re-seed, con 8 filas, antes de repetir la lectura: eso es método,
-no un hallazgo. Rechazó como fila propia la cabecera contra la tarjeta del listado —la divergencia
-la explica entera el recuento— y me hizo quitarla. Aceptó el `200 {ok:false}` como hallazgo
-aparte y por su propia regla partió en dos su fila de errores: quedan tres cuerpos, no cuatro.
-Aceptó el mínimo por verbo y la falta de paginación, y de esta última sacó una consecuencia que
-yo no había visto: al paginar, el contador del front deja de ser el total. Mantuvo su fila del
-`select` final pero degradada y retiró la parte que no pudo reproducir. Su lista de lo no
-verificado es más honesta que su primera tabla.
+**Qué salió:** confirmó las cifras y rechazó como fila propia la cabecera contra la tarjeta (la
+explica entera el recuento); aceptó el `200 {ok:false}` como hallazgo aparte y por su propia
+regla partió en dos la fila de errores; mantuvo el `select` final pero degradado.
+
+---
+
+## Lo que no lleva prompt
+
+- **Fork, rama, `make setup` / `make db` / `make test`, commit y PR**: los ejecuté yo desde la
+  terminal. Ningún agente hizo esos pasos, así que no hay prompt que enseñar.
+- **La Parte B**: la escribí yo con lo que salió de la verificación, sin pedírsela a nadie.
+- **El alcance del Prompt 2 tiene un fallo mío**: le pasé las seis reglas del README y tres son
+  de posts. Por ahí entró la fila 13 (`slug` sin `unique`). La dejé porque decide dónde aterriza
+  un comentario, pero es el único hallazgo cuyo arreglo toca otra feature, y como desliz de
+  alcance es mío, no del agente.
